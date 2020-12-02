@@ -1,8 +1,8 @@
 [package]
-name = "bpf-program-template"
+name = "zoolana"
 version = "0.1.0"
 edition = "2018"
-license = "WTFPL"
+license = "MIT"
 publish = false
 
 [dependencies]
@@ -10,6 +10,7 @@ solana-program = "1.4.6"
 
 [features]
 test-bpf = []
+no-entrypoint = []
 
 [dev-dependencies]
 assert_matches = "1.4.0"
