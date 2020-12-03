@@ -5,12 +5,12 @@ edition = "2018"
 license = "MIT"
 publish = false
 
-[dependencies]
-solana-program = "1.4.6"
-
 [features]
 test-bpf = []
 no-entrypoint = []
+
+[dependencies]
+solana-program = "1.4.6"
 
 [dev-dependencies]
 assert_matches = "1.4.0"
