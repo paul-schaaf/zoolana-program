@@ -14,6 +14,6 @@ fn process_instruction(
     accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
-    info!("Solana escrow entrypoint");
+    info!("Zoolana entrypoint");
     Processor::process(program_id, accounts, instruction_data)
 }
