@@ -5,7 +5,9 @@ use std::convert::TryInto;
 pub enum ZoolanaInstruction {
     WriteMessage {
         sender: u8,
-        buffer_id: u8,
+        signal_id: u8,
+        message_parts: u8,
+        message_part_id: u8,
         message_length: u16,
         message: Vec<u8>,
     },
@@ -19,7 +21,9 @@ impl ZoolanaInstruction {
         Ok(match tag {
             0 => {
                 let (sender, rest) = rest.split_first().ok_or(InvalidInstructionData)?;
-                let (buffer_id, rest) = rest.split_first().ok_or(InvalidInstructionData)?;
+                let (signal_id, rest) = rest.split_first().ok_or(InvalidInstructionData)?;
+                let (message_parts, rest) = rest.split_first().ok_or(InvalidInstructionData)?;
+                let (message_part_id, rest) = rest.split_first().ok_or(InvalidInstructionData)?;
                 let message_length = rest
                     .get(..2)
                     .and_then(|slice| slice.try_into().ok())
@@ -31,7 +35,9 @@ impl ZoolanaInstruction {
                 }
                 Self::WriteMessage {
                     sender: *sender,
-                    buffer_id: *buffer_id,
+                    signal_id: *signal_id,
+                    message_parts: *message_parts,
+                    message_part_id: *message_part_id,
                     message_length,
                     message,
                 }

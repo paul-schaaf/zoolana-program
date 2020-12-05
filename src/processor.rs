@@ -21,12 +21,22 @@ impl Processor {
         match ix {
             ZoolanaInstruction::WriteMessage {
                 sender,
-                buffer_id,
+                signal_id,
+                message_parts,
+                message_part_id,
                 message_length,
                 message,
             } => {
                 info!("Processing write message ix");
-                Self::process_write_message(accounts, sender, buffer_id, message_length, message)
+                Self::process_write_message(
+                    accounts,
+                    sender,
+                    signal_id,
+                    message_parts,
+                    message_part_id,
+                    message_length,
+                    message,
+                )
             }
             _ => Ok(()),
         }
@@ -35,7 +45,9 @@ impl Processor {
     fn process_write_message(
         accounts: &[AccountInfo],
         sender: u8,
-        buffer_id: u8,
+        signal_id: u8,
+        message_parts: u8,
+        message_part_id: u8,
         message_length: u16,
         message: Vec<u8>,
     ) -> ProgramResult {
@@ -52,17 +64,25 @@ impl Processor {
             return Err(ProgramError::InvalidAccountData);
         }
 
+        info!(&format!("message parts: {}", message_parts));
+        info!(&format!("message part id: {}", message_part_id));
+        info!(&format!("message length: {}", message_length));
+
         let mut i = 0;
         loop {
             if account_data[i] == 0 {
                 account_data[i] = sender;
                 i += 1;
-                account_data[i] = buffer_id;
-                let buffer_id_bytes = message_length.to_le_bytes();
+                account_data[i] = signal_id;
                 i += 1;
-                account_data[i] = buffer_id_bytes[0];
+                account_data[i] = message_parts;
                 i += 1;
-                account_data[i] = buffer_id_bytes[1];
+                account_data[i] = message_part_id;
+                let message_length_bytes = message_length.to_le_bytes();
+                i += 1;
+                account_data[i] = message_length_bytes[0];
+                i += 1;
+                account_data[i] = message_length_bytes[1];
                 let mut message_index = 0;
                 i += 1;
                 loop {
@@ -75,8 +95,9 @@ impl Processor {
                 break;
             } else {
                 let current_message_length =
-                    u16::from_le_bytes([account_data[i + 2], account_data[i + 3]]);
-                i += (current_message_length + 4) as usize;
+                    u16::from_le_bytes([account_data[i + 4], account_data[i + 5]]);
+
+                i += (current_message_length + 6) as usize;
             }
         }
         Ok(())
