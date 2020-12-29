@@ -12,11 +12,5 @@ no-entrypoint = []
 [dependencies]
 solana-program = "1.4.6"
 
-[dev-dependencies]
-assert_matches = "1.4.0"
-solana-program-test = "1.4.6"
-solana-sdk = "1.4.6"
-tokio = { version = "0.3", features = ["macros"]}
-
 [lib]
 crate-type = ["cdylib"]

@@ -64,10 +64,6 @@ impl Processor {
             return Err(ProgramError::InvalidAccountData);
         }
 
-        info!(&format!("message parts: {}", message_parts));
-        info!(&format!("message part id: {}", message_part_id));
-        info!(&format!("message length: {}", message_length));
-
         let mut i = 0;
         loop {
             if account_data[i] == 0 {
@@ -83,15 +79,8 @@ impl Processor {
                 account_data[i] = message_length_bytes[0];
                 i += 1;
                 account_data[i] = message_length_bytes[1];
-                let mut message_index = 0;
                 i += 1;
-                loop {
-                    if message_index == message_length as usize {
-                        break;
-                    }
-                    account_data[i + message_index] = message[message_index];
-                    message_index += 1;
-                }
+                account_data[i..i + message_length as usize].copy_from_slice(&message);
                 break;
             } else {
                 let current_message_length =
